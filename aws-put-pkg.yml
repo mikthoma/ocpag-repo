@@ -1,7 +1,0 @@
----
-- name: AWS PUT operation
-  amazon.aws.aws_s3:
-    bucket: ocpagpkgs
-    object: /ocpagpkgs/aws/version4.6/
-    src: /packages/test3.txt
-    mode: put

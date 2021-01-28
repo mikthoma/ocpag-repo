@@ -1,9 +1,0 @@
----
-# File to download air gapped packages from AWS S3 bucket
-- name: AWS GET operation
-  amazon.aws.aws_s3:
-    bucket: ocpagpkgs
-    object: /ocpagpkgs/aws/version4.6/test3.txt
-    dest: /packages/test3.txt
-    mode: get
----
