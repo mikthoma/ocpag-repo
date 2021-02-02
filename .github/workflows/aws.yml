@@ -4,39 +4,63 @@ on:
   push:
     branches:
     - aws
+    - main
+# this will run daily at midnight
+  schedule:
+  - cron: "0 0 * * *"
 
 # this will run when latest code is published in this repo
   # release:
   #   types: [published]
 
-# this will run daily at midnight
-  # schedule:
-  # - cron: "0 0 * * *"
-
-
 jobs:
+  
   # this is where the heavy lifting occurs
   generate_aws_bundle:
     name: Generate AWS Bundle
     runs-on: [self-hosted, Linux]
+    env:
+      PULL_SECRET: ${{ secrets.PULL_SECRET }}
+      OCP_VERSION: ${{ secrets.OCP_VERSION }}
     steps:
-      - name: touch a test file
-        run: |
-          rm -rf aws
-          mkdir aws
-          touch aws/testfile
-          echo 'test' >> aws/testfile
 
-  # this will extract and run tests to ensure all requisite components are present in the bundle as-is
+      - name: Clean and Prepare
+        run: |
+          rm -rf {aws-content,aws}
+          mkdir -p {aws-content,aws}
+          rm -f /tmp/pull_secret.txt
+          echo $PULL_SECRET > /tmp/pull_secret.txt
+
+      - name: Write Variables File
+        run: |
+          cat > gh_actions_variables.yml << EOF
+          ocp_version: $OCP_VERSION
+          pull_secret_path: /tmp/pull_secret.txt
+          os_platform: linux
+          destination: aws-content
+          cloud_selection: aws
+          EOF
+
+      - name: Generate Bundle Content
+        run: |
+          ansible-playbook generate.yml --extra-vars "@gh_actions_variables.yml"
+
+      - name: Compress and Package Content
+        run: |
+          tar -czvf aws/openshift4-linux-$OCP_VERSION-x86_64.tar.gz aws-content/
+
+
+  # checksum the file and prepare for upload
   validate_aws_bundle:
     name: Validate AWS Bundle
     runs-on: [self-hosted, Linux]
     needs: generate_aws_bundle
     steps:
-      - name: validate a test file
+
+      - name: Checksum File
         run: |
-          cat aws/testfile
-          pwd
+          rm -f aws/sha256sum.txt
+          (sha256sum aws/* | sed 's, .*/, ,') > aws/sha256sum.txt
 
   # this will upload whatever is in the local aws directory to the remote aws directory in the S3 bucket.
   upload_aws_bundle:

@@ -3,19 +3,44 @@
   hosts: localhost
   connection: local
 
+  vars_prompt:
+
+    - name: destination
+      prompt: "Desired path to dump content (example: /home/user1/bundle)"
+      private: no
+
+    - name: cloud_selection
+      prompt: Cloud to generate content for (aws,gcp,azure,metal,vmware,openstack)
+      default: "aws"
+      private: no
+
+    - name: pull_secret_path
+      prompt: "Path to your Pull Secret file (example: /home/user1/pull_secret.txt)"
+      private: no
+
+    - name: os_platform
+      prompt: Desired Operating System Platform for execution (linux,macos,windows)
+      default: "linux"
+      private: no
+
+    - name: ocp_version
+      prompt: Desired Openshift Version
+      default: "4.6.8"
+      private: no
+
   roles:
     - role: rhcos-image-download
       vars:
-        dest: "{{ lookup('env', 'DEST') }}"
-        cloud_target: "{{ lookup('env', 'CLOUD_TARGET') }}"
+        dest: "{{ destination }}"
+        cloud_target: "{{ cloud_selection }}"
     - role: openshift-content-mirror
       vars:
-        dest: "{{ lookup('env', 'DEST') }}"
-        pull_secret_file: "{{ lookup('env', 'PULL_SECRET_PATH') }}"
-        os_platform: "{{ lookup('env', 'OS_PLATFORM') }}"
-        ocp_version: "{{ lookup('env', 'OCP_VERSION') }}"
+        dest: "{{ destination }}"
+        pull_secret_file: "{{ pull_secret_path }}"
+        os_platform: "{{ os_platform }}"
+        ocp_version: "{{ ocp_version }}"
     - role: cloud-dependencies
       vars:
-        cloud_target: "{{ lookup('env', 'CLOUD_TARGET') }}"
-        dest: "{{ lookup('env', 'DEST') }}"
-        os_platform: "{{ lookup('env', 'OS_PLATFORM') }}"
+        cloud_target: "{{ cloud_selection }}"
+        dest: "{{ destination }}"
+        os_platform: "{{ os_platform }}"
