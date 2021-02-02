@@ -1,9 +1,15 @@
-
+![AWS Bundle](https://github.com/mikthoma/ocpag-repo/workflows/AWS%20Bundle/badge.svg?branch=main)
 
 Openshift 4 Offline Bundle Generation Tool
 =========
 
 Generates a Bundle for desired cloud, execution platform, and version. This is used to aggregate dependencies from all of the various Red Hat official resources.
+
+Pre-Generated Bundles
+--------------
+
+![AWS Bundle](https://github.com/mikthoma/ocpag-repo/workflows/AWS%20Bundle/badge.svg?branch=main)  [Download Link](https://ocpagpkg.s3-us-west-1.amazonaws.com/aws/openshift4-linux-4.6.8-x86_64.tar.gz) | [sha256sum](https://ocpagpkg.s3-us-west-1.amazonaws.com/aws/sha256sum.txt)
+
 
 Playbook Variables
 --------------
