@@ -59,7 +59,7 @@
     --to-dir={{ dest }}/openshift-release-dev \
     -a {{ pull_secret_file }} \
     quay.io/openshift-release-dev/ocp-release:{{ ocp_version }}-x86_64
-  when: openshift_content.stat.exists is false
+  when: openshift_content.stat.exists == "false"
   changed_when: false #stat conditional makes this idempotent, check molcule issue board for details
 
 - name: Check if Openshift Install Binary already exists
@@ -72,7 +72,7 @@
     {{ dest }}/oc adm release extract -a {{ pull_secret_file }} \
     --command=openshift-install --to={{ dest }} \
     quay.io/openshift-release-dev/ocp-release:{{ ocp_version }}-x86_64
-  when: openshift_install_binary.stat.exists is false
+  when: openshift_install_binary.stat.exists == "false"
   changed_when: false #stat conditional makes this idempotent, check molcule issue board for details
 
 - name: Make Container Image Subdirectory
