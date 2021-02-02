@@ -24,6 +24,11 @@ jobs:
       OCP_VERSION: ${{ secrets.OCP_VERSION }}
     steps:
 
+      - name: Checkout current branch
+        uses: actions/checkout@master
+        with:
+          ref: ${{ github.ref }}
+
       - name: Clean and Prepare
         run: |
           rm -rf {aws-content,aws}
