@@ -1,4 +1,4 @@
-name: AWS Workflow
+name: AWS Bundle
 on:
 # this will run on each merge to main/master
   push:
