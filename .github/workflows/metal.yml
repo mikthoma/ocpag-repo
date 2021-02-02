@@ -1,0 +1,85 @@
+name: Metal Bundle
+on:
+# this will run on each merge to main/master
+  push:
+    branches:
+    - metal
+    - main
+# this will run daily at midnight
+  schedule:
+  - cron: "0 0 * * *"
+
+# this will run when latest code is published in this repo
+  # release:
+  #   types: [published]
+
+jobs:
+  
+  # this is where the heavy lifting occurs
+  generate_metal_bundle:
+    name: Generate Metal Bundle
+    runs-on: [self-hosted, Linux]
+    env:
+      PULL_SECRET: ${{ secrets.PULL_SECRET }}
+      OCP_VERSION: ${{ secrets.OCP_VERSION }}
+    steps:
+
+      - name: Checkout current branch
+        uses: actions/checkout@master
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Clean and Prepare
+        run: |
+          rm -rf {metal-content,metal}
+          mkdir -p {metal-content,metal}
+          rm -f /tmp/pull_secret.txt
+          echo $PULL_SECRET > /tmp/pull_secret.txt
+
+      - name: Write Variables File
+        run: |
+          cat > gh_actions_variables.yml << EOF
+          ocp_version: $OCP_VERSION
+          pull_secret_path: /tmp/pull_secret.txt
+          os_platform: linux
+          destination: metal-content
+          cloud_selection: metal
+          EOF
+
+      - name: Generate Bundle Content
+        run: |
+          ansible-playbook generate.yml --extra-vars "@gh_actions_variables.yml"
+
+      - name: Compress and Package Content
+        run: |
+          tar -czvf metal/openshift4-metal-linux-$OCP_VERSION-x86_64.tar.gz metal-content/*
+
+
+  # checksum the file and prepare for upload
+  validate_metal_bundle:
+    name: Validate Metal Bundle
+    runs-on: [self-hosted, Linux]
+    needs: generate_metal_bundle
+    steps:
+
+      - name: Checksum File
+        run: |
+          rm -f metal/sha256sum.txt
+          (sha256sum metal/* | sed 's, .*/, ,') > metal/sha256sum.txt
+
+  # this will upload whatever is in the local metal directory to the remote metal directory in the S3 bucket.
+  upload_metal_bundle:
+    name: Upload Metal Bundle
+    needs: validate_metal_bundle
+    runs-on: [self-hosted, Linux]
+    steps:
+    - uses: jakejarvis/s3-sync-action@master
+      with: 
+        args: --acl public-read --follow-symlinks --delete
+      env:
+        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: 'us-west-2'   # optional: defaults to us-east-1
+        SOURCE_DIR: 'metal/'      # optional: defaults to entire repository
+        DEST_DIR: 'baremetal'
