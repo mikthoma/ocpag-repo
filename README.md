@@ -1,5 +1,3 @@
-![AWS Bundle](https://github.com/mikthoma/ocpag-repo/workflows/AWS%20Bundle/badge.svg?branch=main)
-
 Openshift 4 Offline Bundle Generation Tool
 =========
 
@@ -8,7 +6,9 @@ Generates a Bundle for desired cloud, execution platform, and version. This is u
 Pre-Generated Bundles
 --------------
 
-![AWS Bundle](https://github.com/mikthoma/ocpag-repo/workflows/AWS%20Bundle/badge.svg?branch=main)  [Download Link](https://ocpagpkg.s3-us-west-1.amazonaws.com/aws/openshift4-linux-4.6.8-x86_64.tar.gz) | [sha256sum](https://ocpagpkg.s3-us-west-1.amazonaws.com/aws/sha256sum.txt)
+![AWS Bundle](https://github.com/mikthoma/ocpag-repo/workflows/AWS%20Bundle/badge.svg?branch=main)  [Download Link](https://ocpagpkg.s3-us-west-1.amazonaws.com/aws/openshift4-aws-linux-4.6.8-x86_64.tar.gz) | [sha256sum](https://ocpagpkg.s3-us-west-1.amazonaws.com/aws/sha256sum.txt)
+
+![Azure Bundle](https://github.com/mikthoma/ocpag-repo/workflows/Azure%20Bundle/badge.svg?branch=main)  [Download](https://ocpagpkg.s3-us-west-1.amazonaws.com/aws/openshift4-azure-linux-4.6.8-x86_64.tar.gz) | [sha256sum](https://ocpagpkg.s3-us-west-1.amazonaws.com/azure/sha256sum.txt)
 
 
 Playbook Variables
