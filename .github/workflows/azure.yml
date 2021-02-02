@@ -69,7 +69,7 @@ jobs:
 
   # this will upload whatever is in the local azure directory to the remote azure directory in the S3 bucket.
   upload_azure_bundle:
-    name: Upload azure Bundle
+    name: Upload Azure Bundle
     needs: validate_azure_bundle
     runs-on: [self-hosted, Linux]
     steps:
@@ -77,9 +77,9 @@ jobs:
       with: 
         args: --acl public-read --follow-symlinks --delete
       env:
-        azure_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-        azure_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        azure_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        azure_REGION: 'us-west-2'   # optional: defaults to us-east-1
+        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: 'us-west-2'   # optional: defaults to us-east-1
         SOURCE_DIR: 'azure/'      # optional: defaults to entire repository
         DEST_DIR: 'azure'
